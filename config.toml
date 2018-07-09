@@ -1,0 +1,12 @@
+[database]
+host="localhost"
+name="club_db"
+
+[server]
+host="localhost"
+port="3000"
+
+[admin]
+username="administrator"
+email="stefan.matyba@googlemail.com"
+password="ksljdfosdjfisdjfiosdf" #<- hash!
