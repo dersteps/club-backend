@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/dersteps/club-backend/model"
 	"gopkg.in/mgo.v2/bson"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 
 	//"github.com/dersteps/club-backend/model"
@@ -108,7 +110,7 @@ func main() {
 	parts := []string{cfg.Server.Host, cfg.Server.Port}
 	listenAddr := strings.Join(parts, ":")
 
-	if err := http.ListenAndServe(listenAddr, r); err != nil {
+	if err := http.ListenAndServe(listenAddr, handlers.LoggingHandler(os.Stdout, r)); err != nil {
 		log.Fatal(err)
 		panic(err)
 	}
