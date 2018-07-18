@@ -42,6 +42,12 @@ func (dao *UsersDAO) FindByID(id string) (model.User, error) {
 	return user, err
 }
 
+func (dao *UsersDAO) FindByName(name string) (model.User, error) {
+	var user model.User
+	err := db.C(COLLECTION).Find(bson.M{"username": name}).One(&user)
+	return user, err
+}
+
 func (dao *UsersDAO) Insert(user model.User) error {
 	err := db.C(COLLECTION).Insert(&user)
 	return err

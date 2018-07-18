@@ -14,5 +14,5 @@ port="3000"
 # The admin section is currently not in use
 [admin]
 username="administrator"
-email="stefan.matyba@googlemail.com"
+mail="stefan.matyba@googlemail.com"
 password="ksljdfosdjfisdjfiosdf" #<- hash!

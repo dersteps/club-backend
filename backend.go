@@ -5,6 +5,9 @@ import (
 	"log"
 	"strings"
 
+	"github.com/dersteps/club-backend/model"
+	"gopkg.in/mgo.v2/bson"
+
 	"github.com/apcera/termtables"
 
 	"github.com/gin-gonic/gin"
@@ -16,6 +19,33 @@ import (
 // Config object for convenient access.
 var cfg = config.Config{}
 var userDAO = dao.UsersDAO{}
+
+func ensureAdmin() {
+	/*[admin]
+	username="administrator"
+	email="stefan.matyba@googlemail.com"
+	password="ksljdfosdjfisdjfiosdf" #<- hash!*/
+	adminUser, err := userDAO.FindByName(cfg.Admin.Username)
+	if err != nil {
+		// user not found
+		log.Println("No admin user found, creating one")
+		admin := model.User{
+			Email:    cfg.Admin.Mail,
+			Name:     "Administrator",
+			Password: cfg.Admin.Password,
+			Username: cfg.Admin.Username,
+			Role:     "admin",
+		}
+		admin.ID = bson.NewObjectId()
+		if err = userDAO.Insert(admin); err != nil {
+			panic(err)
+		}
+		return
+	}
+
+	log.Printf("Admin user found: %s\n", adminUser)
+
+}
 
 // init is a special function called by go automagically.
 // Initializes basic stuff.
@@ -39,28 +69,26 @@ func init() {
 	userDAO.Server = cfg.Database.Host
 	userDAO.Database = cfg.Database.Name
 	userDAO.Connect()
+
+	ensureAdmin()
 }
 
 // setupRoutes will let the router/gin engine know what routes
 // there are and what handler functions are mapped
 func setupRoutes(router *gin.Engine) {
 	// We'll group the routes, so that we are future proof
+	router.POST("/login", AuthMiddleware.LoginHandler)
+
+	auth := router.Group("/api/auth")
+	auth.Use(AuthMiddleware.MiddlewareFunc())
+	auth.GET("/refresh_token", AuthMiddleware.RefreshHandler)
+
 	v1 := router.Group("/api/v1")
-	v1.GET("/users", authenticate, GetAllUsersV1)
+	v1.Use(AuthMiddleware.MiddlewareFunc())
+	v1.GET("/users", GetAllUsersV1)
 	v1.POST("/users", CreateUserV1)
 	v1.PUT("/users", NotImplemented)
 	v1.DELETE("/users", NotImplemented)
-}
-
-// authenticate is currently a dummy middleware that will be utilized
-// to authenticate users later on.
-func authenticate(c *gin.Context) {
-	log.Printf("Authentication for route %s\n", c.Request.URL)
-	// c.Abort will kill the middleware chain
-	//c.Abort()
-	// Send unauthorized status if needed
-	//c.String(http.StatusUnauthorized, "Sorry")
-	return
 }
 
 // main is the application's entry point of course.
