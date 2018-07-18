@@ -46,10 +46,21 @@ func init() {
 func setupRoutes(router *gin.Engine) {
 	// We'll group the routes, so that we are future proof
 	v1 := router.Group("/api/v1")
-	v1.GET("/users", GetAllUsersV1)
+	v1.GET("/users", authenticate, GetAllUsersV1)
 	v1.POST("/users", CreateUserV1)
 	v1.PUT("/users", NotImplemented)
 	v1.DELETE("/users", NotImplemented)
+}
+
+// authenticate is currently a dummy middleware that will be utilized
+// to authenticate users later on.
+func authenticate(c *gin.Context) {
+	log.Printf("Authentication for route %s\n", c.Request.URL)
+	// c.Abort will kill the middleware chain
+	//c.Abort()
+	// Send unauthorized status if needed
+	//c.String(http.StatusUnauthorized, "Sorry")
+	return
 }
 
 // main is the application's entry point of course.
