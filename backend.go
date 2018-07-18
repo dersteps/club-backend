@@ -9,7 +9,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	//"github.com/dersteps/club-backend/model"
 	"github.com/dersteps/club-backend/config"
 	"github.com/dersteps/club-backend/dao"
 )
