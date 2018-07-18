@@ -1,11 +1,17 @@
 [database]
+# The mongo db database host
 host="localhost"
+# The name of the mongo db on the host
 name="club_db"
 
 [server]
+# The server's listen host, usually localhost
 host="localhost"
+
+# The port the server binds to
 port="3000"
 
+# The admin section is currently not in use
 [admin]
 username="administrator"
 email="stefan.matyba@googlemail.com"
