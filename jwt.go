@@ -26,6 +26,7 @@ import (
 var RoleAdmin = "admin"
 var RoleUserAdmin = "useradmin"
 var RoleUser = "user"
+var RoleAny = "*"
 
 var m = make(map[string]map[string][]string)
 
@@ -37,7 +38,15 @@ func init() {
 	mUsers["PUT"] = []string{RoleAdmin, RoleUserAdmin}
 	mUsers["DELETE"] = []string{RoleAdmin, RoleUserAdmin}
 
-	m["(/api/v[0-9]{1,}/)(.*)"] = mUsers
+	mAuth := make(map[string][]string)
+	mAuth["GET"] = []string{RoleAny}
+	mAuth["PUT"] = []string{RoleAny}
+	mAuth["POST"] = []string{RoleAny}
+
+	m["(/api/v[0-9]{1,}/)(users)"] = mUsers
+
+	m["/api/auth/*"] = mAuth
+	m["/api/login"] = mAuth
 
 }
 
@@ -78,9 +87,12 @@ func isAuthorized(reqURL string, reqMethod string, roles []string) bool {
 	for reg := range m {
 		r, _ := regexp.Compile(reg)
 		if r.MatchString(reqURL) {
-			for _, userRole := range roles {
-				for _, requiredRole := range m[reg][reqMethod] {
-					if requiredRole == userRole {
+			for _, requiredRole := range m[reg][reqMethod] {
+				if requiredRole == RoleAny {
+					return true
+				}
+				for _, userRole := range roles {
+					if userRole == requiredRole {
 						return true
 					}
 				}
@@ -107,39 +119,6 @@ func jwtAuthorize(user interface{}, c *gin.Context) bool {
 	}
 
 	return isAuthorized(c.Request.URL.String(), c.Request.Method, roles)
-
-	/*log.Printf("User has roles: %s\n", roles)
-	log.Printf("Type of roles value: %s\n", reflect.TypeOf(roles))
-	log.Printf("Extracted claims: %s\n", claims)
-
-	log.Printf("Auth check for url %s\n", c.Request.URL)
-
-	for reg := range m {
-		log.Printf("Regex: %s, roles: %s", reg, m[reg])
-		r, _ := regexp.Compile(reg)
-		if r.MatchString(c.Request.URL.String()) {
-			log.Printf("Regex matches url pattern: %s\n", reg)
-
-			requiredRoles := m[reg]
-			log.Printf("Type of required roles: %s\n", reflect.TypeOf(requiredRoles))
-			log.Printf("Required roles: %s\n", requiredRoles)
-
-			for _, userRole := range roles {
-				log.Printf("Testing user role '%s'\n", userRole)
-				for _, requiredRole := range requiredRoles {
-					log.Printf("  -> Required role: %s\n", requiredRole)
-					if requiredRole == userRole {
-						log.Println("User has sufficient authorization!")
-						return true
-					}
-				}
-			}
-
-		}
-	}
-
-	//log.Printf("Warning: all users are authorized for everything!")
-	return false*/
 }
 
 func jwtUnauthorized(c *gin.Context, code int, message string) {
