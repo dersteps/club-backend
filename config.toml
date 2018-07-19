@@ -11,8 +11,8 @@ host="localhost"
 # The port the server binds to
 port="3000"
 
-# The admin section is currently not in use
 [admin]
 username="administrator"
 mail="stefan.matyba@googlemail.com"
 password="ksljdfosdjfisdjfiosdf" #<- hash!
+

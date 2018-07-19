@@ -3,9 +3,8 @@ package dao
 import (
 	"log"
 
-	"gopkg.in/mgo.v2/bson"
-
-	mgo "gopkg.in/mgo.v2"
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 
 	"github.com/dersteps/club-backend/model"
 )

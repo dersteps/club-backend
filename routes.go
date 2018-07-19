@@ -29,7 +29,6 @@ func GetAllUsersV1(ctx *gin.Context) {
 // data as JSON.
 // If the operation succeeds, HTTP200 is returned, otherwise, HTTP500 is returned.
 func CreateUserV1(ctx *gin.Context) {
-
 	// Get user from form
 	nick := ctx.PostForm("username")
 	mail := ctx.PostForm("mail")

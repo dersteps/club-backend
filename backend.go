@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"log"
 	"strings"
@@ -32,9 +33,9 @@ func ensureAdmin() {
 		admin := model.User{
 			Email:    cfg.Admin.Mail,
 			Name:     "Administrator",
-			Password: cfg.Admin.Password,
+			Password: string(sha256.New().Sum([]byte(cfg.Admin.Password))),
 			Username: cfg.Admin.Username,
-			Role:     "admin",
+			Roles:    []string{RoleAdmin, RoleUserAdmin, RoleUser},
 		}
 		admin.ID = bson.NewObjectId()
 		if err = userDAO.Insert(admin); err != nil {
@@ -77,7 +78,7 @@ func init() {
 // there are and what handler functions are mapped
 func setupRoutes(router *gin.Engine) {
 	// We'll group the routes, so that we are future proof
-	router.POST("/login", AuthMiddleware.LoginHandler)
+	router.POST("/api/login", AuthMiddleware.LoginHandler)
 
 	auth := router.Group("/api/auth")
 	auth.Use(AuthMiddleware.MiddlewareFunc())

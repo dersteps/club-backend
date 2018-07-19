@@ -13,7 +13,7 @@ type User struct {
 	ID       bson.ObjectId `bson:"_id" json:"id"`
 	Username string        `bson:"username" json:"username"`
 	Email    string        `bson:"mail" json:"mail"`
-	Password string        `bson:"pass" json:"pass"`
+	Password string        `bson:"pass" json:"-"`
 	Name     string        `bson:"name" json:"name"`
-	Role     string        `bson:"role" json:"role"`
+	Roles    []string      `bson:"roles" json:"roles"`
 }
