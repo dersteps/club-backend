@@ -7,7 +7,6 @@ import (
 	"log"
 	"reflect"
 	"regexp"
-	"time"
 
 	"github.com/dersteps/club-backend/model"
 
@@ -132,18 +131,4 @@ func jwtPayload(user interface{}) jwt.MapClaims {
 	return map[string]interface{}{
 		"roles": modelUser.Roles,
 	}
-}
-
-var AuthMiddleware = &jwt.GinJWTMiddleware{
-	Realm:         "Hello there",
-	Key:           []byte("myapisecret"),
-	Timeout:       time.Hour,
-	MaxRefresh:    time.Hour,
-	Authenticator: jwtAuthenticate,
-	Authorizator:  jwtAuthorize,
-	Unauthorized:  jwtUnauthorized,
-	TokenLookup:   "header:Authorization",
-	TokenHeadName: "Bearer",
-	TimeFunc:      time.Now,
-	PayloadFunc:   jwtPayload,
 }

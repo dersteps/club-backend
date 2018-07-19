@@ -11,6 +11,7 @@ type Config struct {
 	Database database
 	Server   server
 	Admin    admin
+	API      api
 }
 
 // The [database] element in the config
@@ -29,6 +30,10 @@ type admin struct {
 	Username string
 	Mail     string
 	Password string
+}
+
+type api struct {
+	Secret string
 }
 
 // Reads the config file and creates a Config from it.

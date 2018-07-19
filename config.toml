@@ -16,3 +16,5 @@ username="administrator"
 mail="stefan.matyba@googlemail.com"
 password="ksljdfosdjfisdjfiosdf" #<- hash!
 
+[api]
+secret="myapisecret"

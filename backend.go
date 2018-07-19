@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
+	jwt "github.com/appleboy/gin-jwt"
 	"github.com/dersteps/club-backend/model"
 	"gopkg.in/mgo.v2/bson"
 
@@ -20,6 +22,19 @@ import (
 // Config object for convenient access.
 var cfg = config.Config{}
 var userDAO = dao.UsersDAO{}
+var authMiddleware = &jwt.GinJWTMiddleware{
+	Realm:         "Hello there",
+	Key:           []byte("myapisecret"),
+	Timeout:       time.Hour,
+	MaxRefresh:    time.Hour,
+	Authenticator: jwtAuthenticate,
+	Authorizator:  jwtAuthorize,
+	Unauthorized:  jwtUnauthorized,
+	TokenLookup:   "header:Authorization",
+	TokenHeadName: "Bearer",
+	TimeFunc:      time.Now,
+	PayloadFunc:   jwtPayload,
+}
 
 func ensureAdmin() {
 	/*[admin]
@@ -58,6 +73,8 @@ func init() {
 		panic(err)
 	}
 
+	authMiddleware.Key = []byte(cfg.API.Secret)
+
 	table := termtables.CreateTable()
 	table.AddHeaders("Item", "Value")
 	table.AddRow("DB Server", cfg.Database.Host)
@@ -72,20 +89,21 @@ func init() {
 	userDAO.Connect()
 
 	ensureAdmin()
+
 }
 
 // setupRoutes will let the router/gin engine know what routes
 // there are and what handler functions are mapped
 func setupRoutes(router *gin.Engine) {
 	// We'll group the routes, so that we are future proof
-	router.POST("/api/login", AuthMiddleware.LoginHandler)
+	router.POST("/api/login", authMiddleware.LoginHandler)
 
 	auth := router.Group("/api/auth")
-	auth.Use(AuthMiddleware.MiddlewareFunc())
-	auth.GET("/refresh_token", AuthMiddleware.RefreshHandler)
+	auth.Use(authMiddleware.MiddlewareFunc())
+	auth.GET("/refresh_token", authMiddleware.RefreshHandler)
 
 	v1 := router.Group("/api/v1")
-	v1.Use(AuthMiddleware.MiddlewareFunc())
+	v1.Use(authMiddleware.MiddlewareFunc())
 	v1.GET("/users", GetAllUsersV1)
 	v1.POST("/users", CreateUserV1)
 	v1.PUT("/users", NotImplemented)
