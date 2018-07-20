@@ -56,7 +56,7 @@ func passwordMatches(password, dbPassword string) bool {
 
 func jwtAuthenticate(username string, password string, c *gin.Context) (interface{}, bool) {
 	// Attempt to find user in database, match password and there you go
-	user, err := userDAO.FindByName(username)
+	user, err := db.FindUserByName(username)
 	if err != nil {
 		log.Printf("Error while searching for user %s: %s\n", username, err.Error())
 		return nil, false
@@ -103,7 +103,7 @@ func isAuthorized(reqURL string, reqMethod string, roles []string) bool {
 
 func jwtAuthorize(user interface{}, c *gin.Context) bool {
 	//log.Printf("USER in authorize method: %s\n", user)
-	user, err := userDAO.FindByName(user.(string))
+	user, err := db.FindUserByName(user.(string))
 	if err != nil {
 		log.Printf("Error while searching for user %s: %s\n", user, err.Error())
 		return false

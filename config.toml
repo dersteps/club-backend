@@ -10,7 +10,6 @@ username="club_mongo"
 # Database password
 password="club_mongo"
 
-
 [server]
 # The server's listen host, usually localhost
 host="localhost"

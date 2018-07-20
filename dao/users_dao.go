@@ -1,5 +1,6 @@
 package dao
 
+/*
 import (
 	"log"
 	"time"
@@ -70,3 +71,4 @@ func (dao *UsersDAO) Update(user model.User) error {
 	err := db.C(COLLECTION).Update(user.ID, &user)
 	return err
 }
+*/

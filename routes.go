@@ -8,14 +8,14 @@ import (
 
 	"github.com/dersteps/club-backend/model"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo/bson"
 )
 
 // GetAllUsersV1 retrieves all users from the underlying mongodb database
 // and renders them as JSON.
 // If the operation succeeds, HTTP200 is returned, otherwise, HTTP500 is returned.
 func GetAllUsersV1(ctx *gin.Context) {
-	users, err := userDAO.FindAll()
+	users, err := db.FindAllUsers()
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
@@ -38,7 +38,7 @@ func CreateUserV1(ctx *gin.Context) {
 	user := model.User{Username: nick, Email: mail, Password: pass, Name: name}
 	user.ID = bson.NewObjectId()
 
-	if err := userDAO.Insert(user); err != nil {
+	if err := db.InsertUser(user); err != nil {
 		log.Fatal("Unable to create new user!")
 		ctx.String(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return

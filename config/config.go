@@ -1,9 +1,11 @@
 package config
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/BurntSushi/toml"
+	"github.com/dersteps/club-backend/util"
+	"github.com/logrusorgru/aurora"
 )
 
 // The whole config structure as a single struct.
@@ -41,7 +43,7 @@ type api struct {
 
 // Reads the config file and creates a Config from it.
 func (c *Config) Read(path string) (err error) {
-	log.Printf("Parsing config file %s\n", path)
+	util.Info(fmt.Sprintf("Parsing config file %s", aurora.Bold(path)))
 	_, err2 := toml.DecodeFile(path, &c)
 	return err2
 }

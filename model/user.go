@@ -1,6 +1,6 @@
 package model
 
-import "gopkg.in/mgo.v2/bson"
+import "github.com/globalsign/mgo/bson"
 
 /*type Permissions struct {
 	ListUsers  bool `bson:"list_users" json:"list_users"`

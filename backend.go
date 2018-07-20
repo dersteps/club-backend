@@ -1,27 +1,25 @@
 package main
 
 import (
-	"crypto/sha256"
 	"fmt"
 	"log"
 	"strings"
 	"time"
 
-	jwt "github.com/appleboy/gin-jwt"
-	"github.com/dersteps/club-backend/model"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/logrusorgru/aurora"
 
-	"github.com/apcera/termtables"
+	jwt "github.com/appleboy/gin-jwt"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/dersteps/club-backend/config"
 	"github.com/dersteps/club-backend/dao"
+	"github.com/dersteps/club-backend/util"
 )
 
 // Config object for convenient access.
 var cfg = config.Config{}
-var userDAO = dao.UsersDAO{}
+var db = dao.DAO{}
 var dbInfo = dao.DBInfo{}
 
 var authMiddleware = &jwt.GinJWTMiddleware{
@@ -38,36 +36,12 @@ var authMiddleware = &jwt.GinJWTMiddleware{
 	PayloadFunc:   jwtPayload,
 }
 
-func ensureAdmin() {
-	/*[admin]
-	username="administrator"
-	email="stefan.matyba@googlemail.com"
-	password="ksljdfosdjfisdjfiosdf" #<- hash!*/
-	adminUser, err := userDAO.FindByName(cfg.Admin.Username)
-	if err != nil {
-		// user not found
-		log.Println("No admin user found, creating one")
-		admin := model.User{
-			Email:    cfg.Admin.Mail,
-			Name:     "Administrator",
-			Password: string(sha256.New().Sum([]byte(cfg.Admin.Password))),
-			Username: cfg.Admin.Username,
-			Roles:    []string{RoleAdmin, RoleUserAdmin, RoleUser},
-		}
-		admin.ID = bson.NewObjectId()
-		if err = userDAO.Insert(admin); err != nil {
-			panic(err)
-		}
-		return
-	}
-
-	log.Printf("Admin user found: %s\n", adminUser)
-
-}
-
 // init is a special function called by go automagically.
 // Initializes basic stuff.
 func init() {
+
+	banner()
+
 	// Read config
 	err := cfg.Read("config.toml")
 	if err != nil {
@@ -77,17 +51,9 @@ func init() {
 
 	authMiddleware.Key = []byte(cfg.API.Secret)
 
-	table := termtables.CreateTable()
-	table.AddHeaders("Item", "Value")
-	table.AddRow("DB Server", cfg.Database.Host)
-	table.AddRow("DB Name", cfg.Database.Name)
-	table.AddRow("DB User", cfg.Database.Username)
-	table.AddRow("DB Timeout", fmt.Sprintf("%d seconds", cfg.Database.Timeout))
-	table.AddRow("DB Password", "LOL, just kidding")
-	table.AddRow("Server", cfg.Server.Host)
-	table.AddRow("Port", cfg.Server.Port)
-
-	fmt.Println(table.Render())
+	util.Info(fmt.Sprintf("Will provide my service at %s:%s", aurora.BgGreen(cfg.Server.Host).Bold(), aurora.BgBlue(cfg.Server.Port).Bold()))
+	util.Info(fmt.Sprintf("Mongo DB server is %s, database %s, username %s",
+		aurora.BgBlue(cfg.Database.Host).Bold(), aurora.BgBlue(cfg.Database.Name).Bold(), aurora.BgBlue(cfg.Database.Username).Bold()))
 
 	// Init database info
 	dbInfo.Database = cfg.Database.Name
@@ -96,10 +62,9 @@ func init() {
 	dbInfo.Timeout = cfg.Database.Timeout
 	dbInfo.Username = cfg.Database.Username
 
-	userDAO.Connect(dbInfo)
+	db.Connect(dbInfo)
 
-	ensureAdmin()
-
+	InitDatabase()
 }
 
 // setupRoutes will let the router/gin engine know what routes
@@ -118,10 +83,16 @@ func setupRoutes(router *gin.Engine) {
 	v1.POST("/users", CreateUserV1)
 	v1.PUT("/users", NotImplemented)
 	v1.DELETE("/users", NotImplemented)
+
+	v1.GET("/functions", NotImplemented)
+	v1.POST("/functions", NotImplemented)
+	v1.PUT("/functions", NotImplemented)
+	v1.DELETE("/functions", NotImplemented)
 }
 
 // main is the application's entry point of course.
 func main() {
+
 	// Setup a default gin router with logging
 	router := gin.Default()
 
