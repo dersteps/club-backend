@@ -3,6 +3,13 @@
 host="localhost"
 # The name of the mongo db on the host
 name="club_db"
+# Database timeout in seconds
+timeout=60
+# Database username
+username="club_mongo"
+# Database password
+password="club_mongo"
+
 
 [server]
 # The server's listen host, usually localhost
@@ -14,7 +21,8 @@ port="3000"
 [admin]
 username="administrator"
 mail="stefan.matyba@googlemail.com"
-password="ksljdfosdjfisdjfiosdf" #<- hash!
+password="administrator" #<- hash!
 
 [api]
 secret="myapisecret"
+

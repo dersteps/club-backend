@@ -16,8 +16,11 @@ type Config struct {
 
 // The [database] element in the config
 type database struct {
-	Host string
-	Name string
+	Host     string
+	Name     string
+	Timeout  int
+	Username string
+	Password string
 }
 
 // The [server] element in the config

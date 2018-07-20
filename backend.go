@@ -22,6 +22,8 @@ import (
 // Config object for convenient access.
 var cfg = config.Config{}
 var userDAO = dao.UsersDAO{}
+var dbInfo = dao.DBInfo{}
+
 var authMiddleware = &jwt.GinJWTMiddleware{
 	Realm:         "Hello there",
 	Key:           []byte("myapisecret"),
@@ -79,14 +81,22 @@ func init() {
 	table.AddHeaders("Item", "Value")
 	table.AddRow("DB Server", cfg.Database.Host)
 	table.AddRow("DB Name", cfg.Database.Name)
+	table.AddRow("DB User", cfg.Database.Username)
+	table.AddRow("DB Timeout", fmt.Sprintf("%d seconds", cfg.Database.Timeout))
+	table.AddRow("DB Password", "LOL, just kidding")
 	table.AddRow("Server", cfg.Server.Host)
 	table.AddRow("Port", cfg.Server.Port)
 
 	fmt.Println(table.Render())
 
-	userDAO.Server = cfg.Database.Host
-	userDAO.Database = cfg.Database.Name
-	userDAO.Connect()
+	// Init database info
+	dbInfo.Database = cfg.Database.Name
+	dbInfo.Password = cfg.Database.Password
+	dbInfo.Server = cfg.Database.Host
+	dbInfo.Timeout = cfg.Database.Timeout
+	dbInfo.Username = cfg.Database.Username
+
+	userDAO.Connect(dbInfo)
 
 	ensureAdmin()
 

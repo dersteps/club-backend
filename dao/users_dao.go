@@ -2,6 +2,7 @@ package dao
 
 import (
 	"log"
+	"time"
 
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
@@ -10,8 +11,6 @@ import (
 )
 
 type UsersDAO struct {
-	Server   string
-	Database string
 }
 
 const (
@@ -21,12 +20,22 @@ const (
 var db *mgo.Database
 
 // Establish database connection
-func (dao *UsersDAO) Connect() {
-	session, err := mgo.Dial(dao.Server)
+func (dao *UsersDAO) Connect(info DBInfo) {
+
+	dialInfo := &mgo.DialInfo{
+		Addrs:    []string{info.Server},
+		Timeout:  time.Duration(info.Timeout) * time.Second,
+		Database: info.Database,
+		Username: info.Username,
+		Password: info.Password,
+	}
+
+	session, err := mgo.DialWithInfo(dialInfo)
 	if err != nil {
 		log.Fatal(err)
 	}
-	db = session.DB(dao.Database)
+
+	db = session.DB(dialInfo.Database)
 }
 
 func (dao *UsersDAO) FindAll() ([]model.User, error) {
