@@ -1,3 +1,5 @@
+// Package config groups all thing related to parsing the config
+// file.
 package config
 
 import (
@@ -8,12 +10,16 @@ import (
 	"github.com/logrusorgru/aurora"
 )
 
-// The whole config structure as a single struct.
+// The Config struct represents the whole config file
 type Config struct {
+	// Database contains database-related config items
 	Database database
-	Server   server
-	Admin    admin
-	API      api
+	// Server contains server-related config items
+	Server server
+	// Admin contains information on the default admin user
+	Admin admin
+	// API contains information on the API itself.
+	API api
 }
 
 // The [database] element in the config

@@ -13,18 +13,18 @@ import (
 	"github.com/globalsign/mgo/bson"
 )
 
-var FunctionPresident = "President"
-var FunctionVicePresident = "Vice President"
-var FunctionTreasurer = "Treasurer"
-var FunctionScribe = "Scribe"
-var FunctionsSAA = "Bitch at Arms"
+var functionPresident = "President"
+var functionVicePresident = "Vice President"
+var functionTreasurer = "Treasurer"
+var functionScribe = "Scribe"
+var functionsSAA = "Bitch at Arms"
 
-var TriggerDBInitVariable = "CLUB_INIT"
+var triggerDBInitVariable = "CREW_INIT"
 
 // Assumes the database connection is established!
 func InitDatabase() {
 
-	envValue := os.Getenv(TriggerDBInitVariable)
+	envValue := os.Getenv(triggerDBInitVariable)
 	if envValue == "" {
 		return
 	}
@@ -32,7 +32,7 @@ func InitDatabase() {
 	b, err := strconv.ParseBool(envValue)
 
 	if err != nil || b != true {
-		util.Warn(fmt.Sprintf("%s is set to '%s'. Set it to 'true' in order to init the database with default values", TriggerDBInitVariable, envValue))
+		util.Warn(fmt.Sprintf("%s is set to '%s'. Set it to 'true' in order to init the database with default values", triggerDBInitVariable, envValue))
 		return
 	}
 
@@ -86,11 +86,11 @@ func ensureFunction(function string) {
 
 func ensureDefaultFunctions() {
 	functionsMap := []string{
-		FunctionPresident,
-		FunctionVicePresident,
-		FunctionScribe,
-		FunctionTreasurer,
-		FunctionsSAA,
+		functionPresident,
+		functionVicePresident,
+		functionScribe,
+		functionTreasurer,
+		functionsSAA,
 	}
 
 	for _, function := range functionsMap {
