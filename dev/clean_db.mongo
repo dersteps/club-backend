@@ -1,0 +1,5 @@
+use club_db
+db.auth("club_mongo", "club_mongo")
+db.users.remove({})
+db.functions.remove({})
+db.members.remove({})

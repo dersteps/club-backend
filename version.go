@@ -6,7 +6,7 @@ import (
 	"github.com/logrusorgru/aurora"
 )
 
-var version = "0.1.5"
+var version = "0.2"
 
 func banner() {
 	log.Println("\n\n  ██████╗██████╗ ███████╗██╗    ██╗    ███████╗███████╗██████╗ ██╗   ██╗███████╗██████╗")
@@ -16,5 +16,5 @@ func banner() {
 	log.Println(" ╚██████╗██║  ██║███████╗╚███╔███╔╝    ███████║███████╗██║  ██║ ╚████╔╝ ███████╗██║  ██║")
 	log.Println("  ╚═════╝╚═╝  ╚═╝╚══════╝ ╚══╝╚══╝     ╚══════╝╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝")
 	log.Printf("\n                        This is %s version %s \n", aurora.BgBlue("Crew Server").Bold(), aurora.BgBlue(version).Bold())
-	log.Printf("                               Made with %s by %s\n\n", aurora.Red("♥").Bold(), "Steps")
+	log.Printf("                             Made with %s by %s\n\n", aurora.Red("♥").Bold(), "Steps")
 }

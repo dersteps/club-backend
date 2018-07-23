@@ -1,7 +1,8 @@
+// Package dao contains all code required in order to access the mongo database
+// used for data storage needs.
 package dao
 
 import (
-	"log"
 	"time"
 
 	"github.com/globalsign/mgo"
@@ -10,6 +11,7 @@ import (
 	"github.com/dersteps/club-backend/model"
 )
 
+// DBInfo wraps everything we need to connect to the mongo database
 type DBInfo struct {
 	Server   string
 	Timeout  int
@@ -18,6 +20,7 @@ type DBInfo struct {
 	Password string
 }
 
+// Empty
 type DAO struct {
 }
 
@@ -30,7 +33,7 @@ const (
 var db *mgo.Database
 
 // Establish database connection
-func (dao *DAO) Connect(info DBInfo) {
+func (dao *DAO) Connect(info DBInfo) error {
 
 	dialInfo := &mgo.DialInfo{
 		Addrs:    []string{info.Server},
@@ -42,10 +45,12 @@ func (dao *DAO) Connect(info DBInfo) {
 
 	session, err := mgo.DialWithInfo(dialInfo)
 	if err != nil {
-		log.Fatal(err)
+		//log.Fatal(err)
+		return err
 	}
 
 	db = session.DB(dialInfo.Database)
+	return nil
 }
 
 func (dao *DAO) FindAllUsers() ([]model.User, error) {

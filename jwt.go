@@ -42,10 +42,18 @@ func init() {
 	mAuth["PUT"] = []string{RoleAny}
 	mAuth["POST"] = []string{RoleAny}
 
+	mFunctions := make(map[string][]string)
+	// Anyone can read what functions there are in the club, no problem
+	mFunctions["GET"] = []string{RoleAny}
+	mFunctions["POST"] = []string{RoleAdmin}
+	mFunctions["PUT"] = []string{RoleAdmin}
+	mFunctions["DELETE"] = []string{RoleAdmin}
+
 	m["(/api/v[0-9]{1,}/)(users)"] = mUsers
 
 	m["/api/auth/*"] = mAuth
 	m["/api/login"] = mAuth
+	m["(/api/v[0-9]{1,}/)(function)"] = mAuth
 
 }
 

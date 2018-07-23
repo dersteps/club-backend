@@ -11,17 +11,34 @@ import (
 	"github.com/globalsign/mgo/bson"
 )
 
+func sendInternalError(ctx *gin.Context) {
+	ctx.String(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+}
+
 // GetAllUsersV1 retrieves all users from the underlying mongodb database
 // and renders them as JSON.
 // If the operation succeeds, HTTP200 is returned, otherwise, HTTP500 is returned.
 func GetAllUsersV1(ctx *gin.Context) {
 	users, err := db.FindAllUsers()
 	if err != nil {
-		ctx.String(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		sendInternalError(ctx)
 		return
 	}
 
 	ctx.JSON(http.StatusOK, users)
+}
+
+// GetAllFunctionsV1 will retrieve all club functions from the database and
+// render them as JSON.
+// If the operation succeeds, HTTP200 is returned, otherwise, HTTP500 is returned.
+func GetAllFunctionsV1(ctx *gin.Context) {
+	functions, err := db.FindAllFunctions()
+	if err != nil {
+		sendInternalError(ctx)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, functions)
 }
 
 // CreateUserV1 creates a new user from a form based POST request.
@@ -40,7 +57,7 @@ func CreateUserV1(ctx *gin.Context) {
 
 	if err := db.InsertUser(user); err != nil {
 		log.Fatal("Unable to create new user!")
-		ctx.String(http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		sendInternalError(ctx)
 		return
 	}
 
