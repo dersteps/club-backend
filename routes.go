@@ -104,7 +104,7 @@ func createFunctionV1(ctx *gin.Context) {
 	}
 }
 
-func extractFunctions(ctx *gin.Context) ([]model.Function, error) {
+func extractFunctions(ctx *gin.Context) ([]bson.ObjectId, error) {
 	var bodyBytes []byte
 	bodyBytes, err := ioutil.ReadAll(ctx.Request.Body)
 
@@ -126,7 +126,7 @@ func extractFunctions(ctx *gin.Context) ([]model.Function, error) {
 	}
 
 	// Find the functions in the database, return slice
-	var ret []model.Function
+	var ret []bson.ObjectId
 	for _, fID := range strIDs {
 		function, err := db.FindFunctionByID(fID)
 		if err != nil {
@@ -134,7 +134,7 @@ func extractFunctions(ctx *gin.Context) ([]model.Function, error) {
 		}
 
 		util.Info(fmt.Sprintf("New Member has function: %s", function.Name))
-		ret = append(ret, function)
+		ret = append(ret, function.ID)
 	}
 	fmt.Printf("Member's functions: \n")
 	fmt.Println(ret)

@@ -48,15 +48,15 @@ type Date struct {
 }
 
 type Member struct {
-	ID          bson.ObjectId `bson:"_id" json:"id"`
-	MemberID    string        `bson:"member_id" json:"member_id"`
-	Name        string        `bson:"name" json:"name"`
-	MiddleNames []string      `bson:"middlenames" json:"middlenames"`
-	Surname     string        `bson:"surname" json:"surname"`
-	Address     Address       `bson:"address" json:"address"`
-	Emails      []Mail        `bson:"emails" json:"emails"`
-	Numbers     []PhoneNumber `bson:"phonenumbers" json:"phonennumbers"`
-	Birthday    Date          `bson:"birthday" json:"birthday"`
-	State       MemberState   `bson:"state" json:"state"`
-	Functions   []Function    `bson:"functions" json:"functions"`
+	ID          bson.ObjectId   `bson:"_id" json:"id"`
+	MemberID    string          `bson:"member_id" json:"member_id"`
+	Name        string          `bson:"name" json:"name"`
+	MiddleNames []string        `bson:"middlenames" json:"middlenames"`
+	Surname     string          `bson:"surname" json:"surname"`
+	Address     Address         `bson:"address" json:"address"`
+	Emails      []Mail          `bson:"emails" json:"emails"`
+	Numbers     []PhoneNumber   `bson:"phonenumbers" json:"phonennumbers"`
+	Birthday    Date            `bson:"birthday" json:"birthday"`
+	State       MemberState     `bson:"state" json:"state"`
+	Functions   []bson.ObjectId `bson:"functions" json:"functions"`
 }
