@@ -130,12 +130,12 @@ func setupRoutes(router *gin.Engine) {
 	v1.DELETE("/users", notImplemented)
 
 	v1.GET("/functions", getAllFunctionsV1)
-	v1.POST("/functions", notImplemented)
+	v1.POST("/functions", createFunctionV1)
 	v1.PUT("/functions", notImplemented)
 	v1.DELETE("/functions", notImplemented)
 
 	v1.GET("/members", getAllMembersV1)
-	v1.POST("/members", notImplemented)
+	v1.POST("/members", createMemberV1)
 	v1.PUT("/members", notImplemented)
 	v1.DELETE("/members", notImplemented)
 }
