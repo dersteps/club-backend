@@ -14,14 +14,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-/*
-	string	-> string	-> map[string][]string
-	url		-> GET  -> []
-			-> POST -> []
-
-
-*/
-
 var RoleAdmin = "admin"
 var RoleUserAdmin = "useradmin"
 var RoleUser = "user"
@@ -49,12 +41,19 @@ func init() {
 	mFunctions["PUT"] = []string{RoleAdmin}
 	mFunctions["DELETE"] = []string{RoleAdmin}
 
+	mMembers := make(map[string][]string)
+	mMembers["GET"] = []string{RoleUser}
+	mMembers["POST"] = []string{RoleAdmin}
+	mMembers["PUT"] = []string{RoleAdmin}
+	mMembers["DELETE"] = []string{RoleAdmin}
+
 	m["(/api/v[0-9]{1,}/)(users)"] = mUsers
 
 	m["/api/auth/*"] = mAuth
 	m["/api/login"] = mAuth
-	m["(/api/v[0-9]{1,}/)(function)"] = mAuth
+	m["(/api/v[0-9]{1,}/)(functions)"] = mAuth
 
+	m["(/api/v[0-9]{1,}/)(members)"] = mMembers
 }
 
 func passwordMatches(password, dbPassword string) bool {

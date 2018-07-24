@@ -6,7 +6,7 @@ name="club_db"
 # Database timeout in seconds
 timeout=60
 # Database username
-username="club_mong3o"
+username="club_mongo"
 # Database password
 password="club_mongo"
 

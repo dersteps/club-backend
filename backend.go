@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"log"
 	"os"
@@ -8,6 +9,7 @@ import (
 	"time"
 
 	"github.com/alecthomas/kingpin"
+	"github.com/globalsign/mgo/bson"
 
 	"github.com/logrusorgru/aurora"
 
@@ -17,6 +19,7 @@ import (
 
 	"github.com/dersteps/club-backend/config"
 	"github.com/dersteps/club-backend/dao"
+	"github.com/dersteps/club-backend/model"
 	"github.com/dersteps/club-backend/util"
 )
 
@@ -121,20 +124,45 @@ func setupRoutes(router *gin.Engine) {
 
 	v1 := router.Group("/api/v1")
 	v1.Use(authMiddleware.MiddlewareFunc())
-	v1.GET("/users", GetAllUsersV1)
-	v1.POST("/users", CreateUserV1)
-	v1.PUT("/users", NotImplemented)
-	v1.DELETE("/users", NotImplemented)
+	v1.GET("/users", getAllUsersV1)
+	v1.POST("/users", createUserV1)
+	v1.PUT("/users", notImplemented)
+	v1.DELETE("/users", notImplemented)
 
-	v1.GET("/functions", GetAllFunctionsV1)
-	v1.POST("/functions", NotImplemented)
-	v1.PUT("/functions", NotImplemented)
-	v1.DELETE("/functions", NotImplemented)
+	v1.GET("/functions", getAllFunctionsV1)
+	v1.POST("/functions", notImplemented)
+	v1.PUT("/functions", notImplemented)
+	v1.DELETE("/functions", notImplemented)
 
-	v1.GET("/members", NotImplemented)
-	v1.POST("/members", NotImplemented)
-	v1.PUT("/members", NotImplemented)
-	v1.DELETE("/members", NotImplemented)
+	v1.GET("/members", getAllMembersV1)
+	v1.POST("/members", notImplemented)
+	v1.PUT("/members", notImplemented)
+	v1.DELETE("/members", notImplemented)
+}
+
+func ensureAdmin() {
+
+	adminUser, err := db.FindUserByName(cfg.Admin.Username)
+	if err != nil {
+		// user not found
+		util.Warn("No admin user found, creating one")
+		admin := model.User{
+			Email:    cfg.Admin.Mail,
+			Name:     "Administrator",
+			Password: string(sha256.New().Sum([]byte(cfg.Admin.Password))),
+			Username: cfg.Admin.Username,
+			Roles:    []string{RoleAdmin, RoleUserAdmin, RoleUser},
+		}
+		admin.ID = bson.NewObjectId()
+		if err = db.InsertUser(admin); err != nil {
+			panic(err)
+		}
+		util.Success(fmt.Sprintf("Created admin user %s", aurora.Green(admin.Username)))
+		return
+	}
+
+	util.Info(fmt.Sprintf("Admin user found: %s", aurora.Green(adminUser.Username)))
+
 }
 
 // main is the application's entry point of course.
@@ -147,6 +175,7 @@ func main() {
 	}
 	ensureConfig()
 	ensureDatabaseConnection()
+	ensureAdmin()
 
 	// yields string
 

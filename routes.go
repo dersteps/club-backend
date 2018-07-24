@@ -18,7 +18,7 @@ func sendInternalError(ctx *gin.Context) {
 // GetAllUsersV1 retrieves all users from the underlying mongodb database
 // and renders them as JSON.
 // If the operation succeeds, HTTP200 is returned, otherwise, HTTP500 is returned.
-func GetAllUsersV1(ctx *gin.Context) {
+func getAllUsersV1(ctx *gin.Context) {
 	users, err := db.FindAllUsers()
 	if err != nil {
 		sendInternalError(ctx)
@@ -31,7 +31,7 @@ func GetAllUsersV1(ctx *gin.Context) {
 // GetAllFunctionsV1 will retrieve all club functions from the database and
 // render them as JSON.
 // If the operation succeeds, HTTP200 is returned, otherwise, HTTP500 is returned.
-func GetAllFunctionsV1(ctx *gin.Context) {
+func getAllFunctionsV1(ctx *gin.Context) {
 	functions, err := db.FindAllFunctions()
 	if err != nil {
 		sendInternalError(ctx)
@@ -41,11 +41,21 @@ func GetAllFunctionsV1(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, functions)
 }
 
+// GetAllMembersV1 will retrieve all members fro mthe database and render them as JSON.
+func getAllMembersV1(ctx *gin.Context) {
+	members, err := db.FindAllMembers()
+	if err != nil {
+		sendInternalError(ctx)
+		return
+	}
+	ctx.JSON(http.StatusOK, members)
+}
+
 // CreateUserV1 creates a new user from a form based POST request.
 // It will attempt to create the new user in the database and render their
 // data as JSON.
 // If the operation succeeds, HTTP200 is returned, otherwise, HTTP500 is returned.
-func CreateUserV1(ctx *gin.Context) {
+func createUserV1(ctx *gin.Context) {
 	// Get user from form
 	nick := ctx.PostForm("username")
 	mail := ctx.PostForm("mail")
@@ -65,6 +75,6 @@ func CreateUserV1(ctx *gin.Context) {
 }
 
 // NotImplemented is a catch-all function for not-yet-implemented routes
-func NotImplemented(ctx *gin.Context) {
+func notImplemented(ctx *gin.Context) {
 	ctx.String(http.StatusOK, "Not implemented yet")
 }
