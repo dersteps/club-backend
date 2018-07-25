@@ -55,7 +55,7 @@ type Member struct {
 	Surname     string        `bson:"surname" json:"surname"`
 	Address     Address       `bson:"address" json:"address"`
 	Emails      []Mail        `bson:"emails" json:"emails"`
-	Numbers     []PhoneNumber `bson:"phonenumbers" json:"phonennumbers"`
+	Numbers     []PhoneNumber `bson:"phonenumbers" json:"phonenumbers"`
 	Birthday    Date          `bson:"birthday" json:"birthday"`
 	State       MemberState   `bson:"state" json:"state"`
 	Functions   []Function    `bson:"functions" json:"functions"`
