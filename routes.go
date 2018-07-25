@@ -104,7 +104,7 @@ func createFunctionV1(ctx *gin.Context) {
 	}
 }
 
-func extractFunctions(ctx *gin.Context) ([]bson.ObjectId, error) {
+func extractFunctions(ctx *gin.Context) ([]model.Function, error) {
 	var bodyBytes []byte
 	bodyBytes, err := ioutil.ReadAll(ctx.Request.Body)
 
@@ -114,6 +114,8 @@ func extractFunctions(ctx *gin.Context) ([]bson.ObjectId, error) {
 
 	// Make sure the request body remains parseable
 	ctx.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+
+	log.Println(string(bodyBytes))
 
 	dec := json.NewDecoder(bytes.NewReader(bodyBytes))
 	data := map[string]interface{}{}
@@ -126,18 +128,16 @@ func extractFunctions(ctx *gin.Context) ([]bson.ObjectId, error) {
 	}
 
 	// Find the functions in the database, return slice
-	var ret []bson.ObjectId
+	var ret []model.Function
 	for _, fID := range strIDs {
 		function, err := db.FindFunctionByID(fID)
 		if err != nil {
 			return nil, errors.New(fmt.Sprintf("Unable to fetch function from database: %s", fID))
 		}
 
-		util.Info(fmt.Sprintf("New Member has function: %s", function.Name))
-		ret = append(ret, function.ID)
+		ret = append(ret, function)
 	}
-	fmt.Printf("Member's functions: \n")
-	fmt.Println(ret)
+
 	return ret, nil
 }
 
@@ -149,10 +149,12 @@ func createMemberV1(ctx *gin.Context) {
 		return
 	}
 
-	_, err := extractFunctions(ctx)
+	// Find the functions
+	functions, err := extractFunctions(ctx)
+
 	if err != nil {
-		util.Fatal("Unable to parse request body as JSON")
-		sendBadRequest(ctx)
+		util.Fatal(fmt.Sprintf("Extracting functions failed: %s", err.Error()))
+		sendInternalError(ctx)
 		return
 	}
 
@@ -163,26 +165,11 @@ func createMemberV1(ctx *gin.Context) {
 		// Successfully parsed POST body JSON data
 		member.ID = bson.NewObjectId()
 
-		// Find the functions
-		functions, err := extractFunctions(ctx)
-
-		if err != nil {
-			util.Fatal(fmt.Sprintf("Extracting functions failed: %s", err.Error()))
-			sendInternalError(ctx)
-			return
-		}
-
 		// Set functions
+		member.Functions = functions
 
 		if err := db.InsertMember(member); err != nil {
 			util.Fatal(fmt.Sprintf("Unable to insert member: '%s'", err.Error()))
-			sendInternalError(ctx)
-			return
-		}
-
-		member.Functions = functions
-		if err := db.UpdateMember(member); err != nil {
-			util.Fatal(fmt.Sprintf("Unable to update member [functions]: %s", err.Error()))
 			sendInternalError(ctx)
 			return
 		}
@@ -191,7 +178,6 @@ func createMemberV1(ctx *gin.Context) {
 
 		ctx.JSON(http.StatusOK, member)
 	} else {
-		util.Fatal("Nope")
 		util.Fatal(err.Error())
 		sendBadRequest(ctx)
 	}
